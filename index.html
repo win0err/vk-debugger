@@ -8,12 +8,16 @@
 		 const originalConsoleLog = console.log;
 		 const originalConsoleError = console.error;
 
+		 const print = (message, type = 'result') => {
+			 const output = document.getElementById('output');
+
+			 output.innerHTML += `<div class="${type}">${message}</div>`;
+			 output.scrollTop = output.scrollHeight; // Прокрутка вниз
+		 }
+
 		 console.log = function(message) {
 			 originalConsoleLog(message);
-
-			 const output = document.getElementById('output');
-			 output.innerHTML += '<div>' + message + '</div>';
-			 output.scrollTop = output.scrollHeight; // Прокрутка вниз
+			 print(message);
 		 };
 
 		 console.error = function(message) {
@@ -30,7 +34,7 @@
 			 const code = inputField.value;
 			 inputField.value = ''; // Очистка поля ввода
 
-			 console.log('> ' + code); // Вывод команды
+			 print(code, 'code'); // Вывод команды
 
 			 try {
 				 console.log(eval(code));
@@ -43,20 +47,37 @@
 		</script>
 		<style>
 		 body {
-			 font-family: Arial, sans-serif;
-			 font-size: 14px;
+			 font-size: 12px;
 			 background-color: #f4f4f4;
 			 padding: 1rem;
+			 font-family: monospace;
 		 }
 		 #output {
-			 font-family: monospace;
 			 border: 1px solid #ccc;
 			 padding: 10px;
 			 overflow-y: auto;
 			 background-color: #fff;
 			 margin-bottom: 10px;
-			 white-space: pre-wrap; /* Сохранение пробелов и переносов строк */
+			 white-space: pre-wrap;
+			 display: flex;
+			 flex-direction: column;
+			 gap: 5px;
 		 }
+
+		 #output .welcome {
+			 font-weight: bold;
+		 }
+
+		 #output .code::before {
+			 content: '> ';
+			 color: 'cadetblue';
+		 }
+
+		 #output .result::before {
+			 content: '← ';
+			 color: 'cadetblue';
+		 }
+
 		 #input {
 			 display: flex;
 			 width: 100%;
@@ -75,6 +96,18 @@
 		 }
 		</style>
 		<script src="https://vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
+		<script src="https://vk.com/js/api/openapi.js?169" type="text/javascript"></script>
+		<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+	</head>
+	<body>
+		<div id="output"></div>
+		<div id="input">
+			<textarea id="inputField" placeholder=">>" rows="5"></textarea>
+			<button id="executeButton" onclick="executeCode()">↵</button>
+		</div>
+		<script>
+		 print('Welcome to JS SDK & VK Bridge Console', 'welcome');
+		</script>
 		<script type="text/javascript">
 		 VK.init(function() {
 			 // API initialization succeeded
@@ -84,20 +117,10 @@
 			 console.error("VK API initialization failed.");
 		 }, '5.199');
 		</script>
-		<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 		<script>
 		 // Отправляет событие инициализации нативному клиенту
 		 vkBridge.send('VKWebAppInit');
-		</script>
-	</head>
-	<body>
-		<div id="output"></div>
-		<div id="input">
-			<textarea id="inputField" placeholder=">>" rows="5"></textarea>
-			<button id="executeButton" onclick="executeCode()">↵</button>
-		</div>
-		<script>
-		 console.log('Welcome to JS SDK & VK Bridge Console');
+		 console.log("VKWebAppInit fired");
 		</script>
 	</body>
 </html>
