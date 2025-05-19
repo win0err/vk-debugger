@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>JavaScript Console</title>
+		<script>
+		 const originalConsoleLog = console.log;
+		 const originalConsoleError = console.error;
+
+		 console.log = function(message) {
+			 originalConsoleLog(message);
+
+			 const output = document.getElementById('output');
+			 output.innerHTML += '<div>' + message + '</div>';
+			 output.scrollTop = output.scrollHeight; // Прокрутка вниз
+		 };
+
+		 console.error = function(message) {
+			 originalConsoleError(message);
+
+			 const output = document.getElementById('output');
+			 output.innerHTML += '<div style="color: red;">' + message + '</div>';
+			 output.scrollTop = output.scrollHeight; // Прокрутка вниз
+		 };
+
+		 function executeCode() {
+			 const inputField = document.getElementById('inputField');
+
+			 const code = inputField.value;
+			 inputField.value = ''; // Очистка поля ввода
+
+			 console.log('> ' + code); // Вывод команды
+
+			 try {
+				 console.log(eval(code));
+			 } catch (e) {
+				 console.error(e);
+			 }
+
+			 window.scrollTo(0, document.body.scrollHeight);
+		 }
+		</script>
+		<style>
+		 body {
+			 font-family: Arial, sans-serif;
+			 font-size: 14px;
+			 background-color: #f4f4f4;
+			 padding: 1rem;
+		 }
+		 #output {
+			 font-family: monospace;
+			 border: 1px solid #ccc;
+			 padding: 10px;
+			 overflow-y: auto;
+			 background-color: #fff;
+			 margin-bottom: 10px;
+			 white-space: pre-wrap; /* Сохранение пробелов и переносов строк */
+		 }
+		 #input {
+			 display: flex;
+			 width: 100%;
+		 }
+		 #input > * {
+			 margin: 0;
+			 border: 1px solid #ccc;
+		 }
+		 #inputField {
+			 flex-grow: 1;
+		 }
+		 #executeButton {
+			 width: 50px;
+
+			 border-left: 0px;
+		 }
+		</style>
+		<script src="https://vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
+		<script type="text/javascript">
+		 VK.init(function() {
+			 // API initialization succeeded
+			 console.log("VK API initialized successfully.");
+		 }, function() {
+			 // API initialization failed
+			 console.error("VK API initialization failed.");
+		 }, '5.199');
+		</script>
+		<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+		<script>
+		 // Отправляет событие инициализации нативному клиенту
+		 vkBridge.send('VKWebAppInit');
+		</script>
+	</head>
+	<body>
+		<div id="output"></div>
+		<div id="input">
+			<textarea id="inputField" placeholder=">>" rows="5"></textarea>
+			<button id="executeButton" onclick="executeCode()">↵</button>
+		</div>
+		<script>
+		 console.log('Welcome to JS SDK & VK Bridge Console');
+		</script>
+	</body>
+</html>
