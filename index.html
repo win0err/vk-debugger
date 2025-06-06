@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>JavaScript Console</title>
-		<script>
+  <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JavaScript Console</title>
+
+	<script>
 		 const originalConsoleLog = console.log;
 		 const originalConsoleError = console.error;
 
@@ -44,8 +45,9 @@
 
 			 window.scrollTo(0, document.body.scrollHeight);
 		 }
-		</script>
-		<style>
+	</script>
+
+	<style>
 		 body {
 			 font-size: 12px;
 			 background-color: #f4f4f4;
@@ -94,21 +96,30 @@
 
 			 border-left: 0px;
 		 }
-		</style>
-		<script src="https://vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
-		<script src="https://vk.com/js/api/openapi.js?169" type="text/javascript"></script>
-		<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-	</head>
-	<body>
-		<div id="output"></div>
-		<div id="input">
-			<textarea id="inputField" placeholder=">>" rows="5"></textarea>
-			<button id="executeButton" onclick="executeCode()">↵</button>
-		</div>
-		<script>
+	</style>
+
+	<script src="https://vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
+	<script src="https://vk.com/js/api/openapi.js?169" type="text/javascript"></script>
+	<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  </head>
+
+  <body>
+	<div id="output"></div>
+
+	<div id="input">
+	  <textarea id="inputField" placeholder=">>" rows="5"></textarea>
+	  <button id="executeButton" onclick="executeCode()">↵</button>
+	</div>
+
+	<script>
 		 print('Welcome to JS SDK & VK Bridge Console', 'welcome');
-		</script>
-		<script type="text/javascript">
+	</script>
+
+	<script>
+		 print(`User-Agent: ${navigator.userAgent}`, 'plain');
+	</script>
+
+	<script type="text/javascript">
 		 VK.init(function() {
 			 // API initialization succeeded
 			 console.log("VK API initialized successfully.");
@@ -116,11 +127,12 @@
 			 // API initialization failed
 			 console.error("VK API initialization failed.");
 		 }, '5.199');
-		</script>
-		<script>
+	</script>
+
+	<script>
 		 // Отправляет событие инициализации нативному клиенту
 		 vkBridge.send('VKWebAppInit');
 		 console.log("VKWebAppInit fired");
-		</script>
-	</body>
+	</script>
+  </body>
 </html>
