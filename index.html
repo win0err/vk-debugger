@@ -142,37 +142,23 @@
 		print(
 			[
 				`User-Agent: ${navigator.userAgent}`,
-				`VH Units: <span id="vh-output">...</span>`
+				`Current Frame Height: <span id="vh-output">...</span>`
 			].join('<br />'),
 			'technical',
 		)
 
-		const measureUnits = () => {
-			document.getElementById('vh-output').textContent = ['vh', 'dvh', 'lvh', 'svh']
-				.reduce((acc, unit) => {
-					const el = document.createElement('div')
-
-					el.style.position = 'absolute'
-					el.style.top = '-9999px'
-					el.style.height = `1${unit}`
-					el.style.width  = '0'
-
-					document.body.appendChild(el)
-
-					const { height: px } = el.getBoundingClientRect()
-
-					document.body.removeChild(el)
-
-					acc.push(`1${unit}=${px.toFixed(2)}px`)
-
-					return acc
-				}, [])
-				.join(', ')
+		const measureHeight = () => {
+			const height = window.visualViewport?.height ?? window.innerHeight
+			document.getElementById('vh-output').textContent = `${height}px`
 		}
 
-		window.addEventListener('resize', measureUnits)
-		window.addEventListener('orientationchange', measureUnits)
-		document.addEventListener('DOMContentLoaded', measureUnits)
+		window.addEventListener('resize', measureHeight)
+		window.addEventListener('orientationchange', measureHeight)
+		document.addEventListener('DOMContentLoaded', measureHeight)
+
+		if (window.visualViewport) {
+			window.visualViewport.addEventListener('resize', measureHeight);
+		}
 	</script>
 
 	<script type="text/javascript">
