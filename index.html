@@ -6,44 +6,50 @@
 	<title>JavaScript Console</title>
 
 	<script>
-		 const originalConsoleLog = console.log;
-		 const originalConsoleError = console.error;
+		const originalConsoleLog = console.log
+		const originalConsoleError = console.error
 
-		 const print = (message, type = 'result') => {
-			 const output = document.getElementById('output');
+		window.print = (message, type = 'result') => {
+			const output = document.getElementById('output')
 
-			 output.innerHTML += `<div class="${type}">${message}</div>`;
-			 output.scrollTop = output.scrollHeight; // Прокрутка вниз
-		 }
+			output.insertAdjacentHTML('beforeend', `<div class="${type}">${message}</div>`)
+			output.scrollTop = output.scrollHeight
+		}
 
-		 console.log = function(message) {
-			 originalConsoleLog(message);
-			 print(message);
-		 };
+		console.log = (message) => {
+			originalConsoleLog(message)
+			print(message)
+		}
 
-		 console.error = function(message) {
-			 originalConsoleError(message);
+		console.error = (message) => {
+			originalConsoleError(message)
+			print(message, 'error')
+		}
 
-			 const output = document.getElementById('output');
-			 output.innerHTML += '<div style="color: red;">' + message + '</div>';
-			 output.scrollTop = output.scrollHeight; // Прокрутка вниз
-		 };
+		window.addEventListener(
+			'unhandledrejection',
+			({ reason }) => print(`Uncaught (in promise) ${reason}`, 'error'),
+		)
 
-		 function executeCode() {
-			 const inputField = document.getElementById('inputField');
+		window.onerror =  (message, source, lineno, colno, error) => {
+			print(`Uncaught Error: ${message} at ${source}:${lineno}:${colno}`, 'error')
+		}
 
-			 const code = inputField.value;
-			 inputField.value = ''; // Очистка поля ввода
+		window.executeCode = () => {
+			const inputField = document.getElementById('inputField')
 
-			 print(code, 'code'); // Вывод команды
+			const code = inputField.value
+			inputField.value = ''
 
-			 try {
-				 console.log(eval(code));
-			 } catch (e) {
-				 console.error(e);
-			 }
+			print(code, 'code')
 
-			 window.scrollTo(0, document.body.scrollHeight);
+			try {
+				console.log(eval(code))
+			} catch (e) {
+				console.error(e)
+			}
+
+			window.scrollTo(0, document.body.scrollHeight)
 		 }
 	</script>
 
@@ -54,6 +60,7 @@
 			 padding: 1rem;
 			 font-family: monospace;
 		 }
+
 		 #output {
 			 border: 1px solid #ccc;
 			 padding: 10px;
@@ -70,27 +77,43 @@
 			 font-weight: bold;
 		 }
 
+		 #output .technical {
+			 font-style: italic;
+			 font-size: .875em;
+		 }
+
 		 #output .code::before {
 			 content: '> ';
-			 color: 'cadetblue';
+			 color: cadetblue;
 		 }
 
 		 #output .result::before {
 			 content: '← ';
-			 color: 'cadetblue';
+			 color: cadetblue;
+		 }
+
+		 #output .error {
+			 color: crimson;
+		 }
+
+		 #output .error::before {
+			 content: '! ';
 		 }
 
 		 #input {
 			 display: flex;
 			 width: 100%;
 		 }
+
 		 #input > * {
 			 margin: 0;
 			 border: 1px solid #ccc;
 		 }
+
 		 #inputField {
 			 flex-grow: 1;
 		 }
+
 		 #executeButton {
 			 width: 50px;
 
@@ -111,28 +134,73 @@
 	  <button id="executeButton" onclick="executeCode()">↵</button>
 	</div>
 
-	<script>
-		 print('Welcome to JS SDK & VK Bridge Console', 'welcome');
-	</script>
-
-	<script>
-		 print(`User-Agent: ${navigator.userAgent}`, 'plain');
+	<script type="text/javascript">
+		print('Welcome to JS SDK & VK Bridge Console', 'welcome')
 	</script>
 
 	<script type="text/javascript">
-		 VK.init(function() {
-			 // API initialization succeeded
-			 console.log("VK API initialized successfully.");
-		 }, function() {
-			 // API initialization failed
-			 console.error("VK API initialization failed.");
-		 }, '5.199');
+		print(
+			[
+				`User-Agent: ${navigator.userAgent}`,
+				`VH Units: <span id="vh-output">...</span>`
+			].join('<br />'),
+			'technical',
+		)
+
+		const measureUnits = () => {
+			document.getElementById('vh-output').textContent = ['vh', 'dvh', 'lvh', 'svh']
+				.reduce((acc, unit) => {
+					const el = document.createElement('div')
+
+					el.style.position = 'absolute'
+					el.style.top = '-9999px'
+					el.style.height = `1${unit}`
+					el.style.width  = '0'
+
+					document.body.appendChild(el)
+
+					const { height: px } = el.getBoundingClientRect()
+
+					document.body.removeChild(el)
+
+					acc.push(`1${unit}=${px.toFixed(2)}px`)
+
+					return acc
+				}, [])
+				.join(', ')
+		}
+
+		window.addEventListener('resize', measureUnits)
+		window.addEventListener('orientationchange', measureUnits)
+		document.addEventListener('DOMContentLoaded', measureUnits)
 	</script>
 
-	<script>
-		 // Отправляет событие инициализации нативному клиенту
-		 vkBridge.send('VKWebAppInit');
-		 console.log("VKWebAppInit fired");
+	<script type="text/javascript">
+		VK.init(
+			() => print([
+				'VK.init() completed.',
+				'Docs: <a href="https://dev.vk.com/sdk/javascript" target="_blank">JavaScript SDK</a>.',
+				'Usage: VK.someMethod()',
+			].join(' ')),
+			() => print('VK API initialization failed', 'error'),
+			'5.199',
+		);
+	</script>
+
+	<script type="text/javascript">
+		window.bridge = window.vkBridge
+
+		const initBridge = async () => {
+			await bridge.send('VKWebAppInit')
+
+			print([
+				'VK Bridge inited.',
+				'Docs: <a href="https://dev.vk.com/bridge/overview" target="_blank">VK Bridge</a>.',
+				'Usage: bridge.send(methodName) or vkBridge.send(methodName)',
+			].join(' '))
+		}
+
+		initBridge()
 	</script>
   </body>
 </html>
